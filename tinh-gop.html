@@ -103,14 +103,14 @@
 
         document.getElementById("result-details").innerHTML = '';
 
-        let debt = Math.round(productPrice - downPayment); // Thay đổi ở đây
-        let principalPayment = Math.round(debt / installmentPeriod); // Thay đổi ở đây
+        let debt = Math.round(productPrice - downPayment);
+        let principalPayment = Math.round(debt / installmentPeriod);
         let paymentDetails = "";
         for (let i = 1; i <= installmentPeriod; i++) {
-            let interest = Math.round(debt * 0.1); // Thay đổi ở đây
-            let monthlyPayment = Math.round(principalPayment + interest); // Thay đổi ở đây
+            let interest = Math.round(debt * 0.1);
+            let monthlyPayment = Math.round(principalPayment + interest);
             paymentDetails += `- Tháng Thứ ${i}: ${new Intl.NumberFormat('vi-VN').format(monthlyPayment)} đ <br>(Nợ: ${new Intl.NumberFormat('vi-VN').format(debt)} đ, Lãi: ${new Intl.NumberFormat('vi-VN').format(interest)} đ)<br>`;
-            debt = Math.round(debt - principalPayment); // Thay đổi ở đây
+            debt = Math.round(debt - principalPayment);
         }
 
         document.getElementById("result-debt").innerText = "Tổng Nợ: " + new Intl.NumberFormat('vi-VN').format(Math.round(productPrice - downPayment)) + " đ"; // Thay đổi ở đây
