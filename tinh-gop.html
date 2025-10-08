@@ -1,0 +1,123 @@
+<div>
+    <h4>Tính Góp</h4>
+    <label for="product-price-page">Giá Của Acc</label>
+    <input type="text" id="product-price-page" onfocus="removeCurrencySymbol('product-price-page')" onblur="addCurrencySymbol('product-price-page')" oninput="formatCurrencyInput('product-price-page'); updateDownPaymentAndInstallmentPeriod();"><br>
+    <label for="down-payment">Trả Trước 30-50%:</label>
+    <input type="text" id="down-payment" min="0" data-value="0" onfocus="removeCurrencySymbol('down-payment')" onblur="addCurrencySymbol('down-payment')" oninput="formatCurrencyInput('down-payment')"><br>
+    <label for="installment-period">Thời Gian Góp (Tháng):</label>
+    <select id="installment-period">
+        <option value="1">1 tháng</option>
+        <option value="2">2 tháng</option>
+        <option value="3">3 tháng</option>
+    </select>
+    <button class="button match-bt" onclick="calculateInstallment()">Tính toán</button>
+    <p id="result-debt"></p>
+    <p id="result-monthly"></p>
+    <p id="result-details"></p>
+</div>
+<script>
+    function formatCurrencyInput(id) {
+        let input = document.getElementById(id);
+        let rawValue = input.value.replace(/\D/g, '');
+        if (rawValue) {
+            let formattedValue = new Intl.NumberFormat('vi-VN').format(rawValue);
+            input.value = formattedValue;
+            input.setAttribute('data-value', rawValue);
+        } else {
+            input.value = '';
+            input.setAttribute('data-value', '0');
+        }
+    }
+
+    function removeCurrencySymbol(id) {
+        let input = document.getElementById(id);
+        input.value = input.value.replace(/ đ/g, '');
+    }
+
+    function addCurrencySymbol(id) {
+        let input = document.getElementById(id);
+        let rawValue = input.getAttribute('data-value');
+        if (rawValue) {
+            let formattedValue = new Intl.NumberFormat('vi-VN').format(rawValue);
+            input.value = formattedValue + ' đ';
+        }
+    }
+
+    function getNumericValue(id) {
+        let input = document.getElementById(id);
+        return parseInt(input.getAttribute('data-value'), 10);
+    }
+
+    function updateDownPaymentAndInstallmentPeriod() {
+        let productPrice = getNumericValue("product-price-page");
+        let downPaymentField = document.getElementById("down-payment");
+        let installmentPeriodField = document.getElementById("installment-period");
+
+        if (productPrice) {
+            let minimumDownPayment;
+            if (productPrice < 4000000) {
+                minimumDownPayment = productPrice * 0.5;
+                installmentPeriodField.value = "1";
+                installmentPeriodField.disabled = true;
+            } else {
+                minimumDownPayment = productPrice * 0.3;
+                installmentPeriodField.disabled = false;
+            }
+            downPaymentField.value = new Intl.NumberFormat('vi-VN').format(Math.round(minimumDownPayment)) + ' đ';
+            downPaymentField.setAttribute('data-value', Math.round(minimumDownPayment));
+        } else {
+            downPaymentField.value = '';
+            downPaymentField.setAttribute('data-value', '0');
+        }
+    }
+
+    function calculateInstallment() {
+        let productPrice = getNumericValue("product-price-page");
+        let downPayment = getNumericValue("down-payment");
+        let installmentPeriod = parseInt(document.getElementById("installment-period").value);
+
+        if (isNaN(productPrice) || isNaN(downPayment) || isNaN(installmentPeriod)) {
+            let errorElement = document.createElement('p');
+            errorElement.style.color = 'red';
+            errorElement.textContent = "Vui lòng nhập đầy đủ thông tin hợp lệ.";
+            document.getElementById("result-details").innerHTML = '';
+            document.getElementById("result-details").appendChild(errorElement);
+            return;
+        }
+
+        let minimumDownPayment;
+        if (productPrice < 4000000) {
+            minimumDownPayment = productPrice * 0.5;
+        } else {
+            minimumDownPayment = productPrice * 0.3;
+        }
+
+        if (downPayment < minimumDownPayment) {
+            let errorElement = document.createElement('p');
+            errorElement.style.color = 'red';
+            errorElement.textContent = `Số tiền trả trước phải tối thiểu là ${new Intl.NumberFormat('vi-VN').format(minimumDownPayment)} đ.`;
+            document.getElementById("result-details").innerHTML = '';
+            document.getElementById("result-details").appendChild(errorElement);
+            return;
+        }
+
+        document.getElementById("result-details").innerHTML = '';
+
+        let debt = Math.round(productPrice - downPayment); // Thay đổi ở đây
+        let principalPayment = Math.round(debt / installmentPeriod); // Thay đổi ở đây
+        let paymentDetails = "";
+        for (let i = 1; i <= installmentPeriod; i++) {
+            let interest = Math.round(debt * 0.1); // Thay đổi ở đây
+            let monthlyPayment = Math.round(principalPayment + interest); // Thay đổi ở đây
+            paymentDetails += `- Tháng Thứ ${i}: ${new Intl.NumberFormat('vi-VN').format(monthlyPayment)} đ <br>(Nợ: ${new Intl.NumberFormat('vi-VN').format(debt)} đ, Lãi: ${new Intl.NumberFormat('vi-VN').format(interest)} đ)<br>`;
+            debt = Math.round(debt - principalPayment); // Thay đổi ở đây
+        }
+
+        document.getElementById("result-debt").innerText = "Tổng Nợ: " + new Intl.NumberFormat('vi-VN').format(Math.round(productPrice - downPayment)) + " đ"; // Thay đổi ở đây
+        document.getElementById("result-details").innerHTML = paymentDetails;
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        updateDownPaymentAndInstallmentPeriod();
+    });
+</script>
