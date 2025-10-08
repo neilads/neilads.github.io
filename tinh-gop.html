@@ -1,134 +1,258 @@
-<div>
-    <h4>Tính Góp</h4>
-    <label for="product-price-page">Giá Của Acc</label>
-    <input type="text" id="product-price-page" onfocus="removeCurrencySymbol('product-price-page')" onblur="addCurrencySymbol('product-price-page')" oninput="formatCurrencyInput('product-price-page'); updateDownPaymentAndInstallmentPeriod();"><br>
-    <label for="down-payment">Trả Trước (Tối thiểu 30%):</label>
-    <input type="text" id="down-payment" min="0" data-value="0" onfocus="removeCurrencySymbol('down-payment')" onblur="addCurrencySymbol('down-payment')" oninput="formatCurrencyInput('down-payment')"><br>
-    <label for="installment-period">Thời Gian Góp (Tháng):</label>
-    <select id="installment-period">
-        <option value="1">1 tháng</option>
-        <option value="2">2 tháng</option>
-        <option value="3">3 tháng</option>
-        <option value="4">4 tháng</option>
-        <option value="5">5 tháng</option>
-        <option value="6">6 tháng</option>
-        <option value="7">7 tháng</option>
-        <option value="8">8 tháng</option>
-        <option value="9">9 tháng</option>
-        <option value="10">10 tháng</option>
-        <option value="11">11 tháng</option>
-        <option value="12">12 tháng</option>
-    </select><br>
-    <label for="interest-rate">Lãi Suất (%):</label>
-    <input type="number" id="interest-rate" min="3" max="10" step="0.1" value="10" oninput="validateInterestRate()">
-    <button class="button match-bt" onclick="calculateInstallment()">Tính toán</button>
-    <p id="result-debt"></p>
-    <p id="result-monthly"></p>
-    <p id="result-details"></p>
-</div>
-<script>
-    function formatCurrencyInput(id) {
-        let input = document.getElementById(id);
-        let rawValue = input.value.replace(/\D/g, '');
-        if (rawValue) {
-            let formattedValue = new Intl.NumberFormat('vi-VN').format(rawValue);
-            input.value = formattedValue;
-            input.setAttribute('data-value', rawValue);
-        } else {
-            input.value = '';
-            input.setAttribute('data-value', '0');
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>💰 Tính Góp - Công Cụ Tính Toán Trả Góp</title>
+    <meta name="description" content="Công cụ tính toán trả góp linh hoạt với lãi suất tùy chọn từ 3-10%, thời gian góp tối đa 12 tháng">
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="page-container">
+        <main class="main-content">
+            <div class="calculator-container">
+                <div class="calculator-header">
+                    <h2>🧮 Máy Tính Trả Góp</h2>
+                    <p class="calculator-description">Nhập thông tin để tính toán khoản trả góp phù hợp</p>
+                </div>
+
+                <form class="calculator-form" id="calculator-form">
+                    <div class="form-group">
+                        <label for="product-price-page" class="form-label">
+                            <span class="label-icon">💵</span>
+                            Giá Của Acc
+                        </label>
+                        <input type="text" id="product-price-page" class="form-input" 
+                               onfocus="removeCurrencySymbol('product-price-page')" 
+                               onblur="addCurrencySymbol('product-price-page')" 
+                               oninput="formatCurrencyInput('product-price-page'); updateDownPaymentAndInstallmentPeriod();"
+                               placeholder="Nhập giá sản phẩm">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="down-payment" class="form-label">
+                            <span class="label-icon">💳</span>
+                            Trả Trước (Tối thiểu 30%)
+                        </label>
+                        <input type="text" id="down-payment" class="form-input" 
+                               data-value="0" 
+                               onfocus="removeCurrencySymbol('down-payment')" 
+                               onblur="addCurrencySymbol('down-payment')" 
+                               oninput="formatCurrencyInput('down-payment')"
+                               placeholder="Số tiền trả trước">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="installment-period" class="form-label">
+                            <span class="label-icon">📅</span>
+                            Thời Gian Góp (Tháng)
+                        </label>
+                        <select id="installment-period" class="form-select">
+                            <option value="1">1 tháng</option>
+                            <option value="2">2 tháng</option>
+                            <option value="3">3 tháng</option>
+                            <option value="4">4 tháng</option>
+                            <option value="5">5 tháng</option>
+                            <option value="6">6 tháng</option>
+                            <option value="7">7 tháng</option>
+                            <option value="8">8 tháng</option>
+                            <option value="9">9 tháng</option>
+                            <option value="10">10 tháng</option>
+                            <option value="11">11 tháng</option>
+                            <option value="12">12 tháng</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="interest-rate" class="form-label">
+                            <span class="label-icon">📊</span>
+                            Lãi Suất (%)
+                        </label>
+                        <input type="number" id="interest-rate" class="form-input" 
+                               min="3" max="10" step="0.1" value="10" 
+                               oninput="validateInterestRate()"
+                               placeholder="3.0 - 10.0">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="minimum-interest" class="form-label">
+                            <span class="label-icon">💰</span>
+                            Tiền Lãi Tối Thiểu (Tùy chọn)
+                        </label>
+                        <input type="text" id="minimum-interest" class="form-input" 
+                               data-value="0" 
+                               onfocus="removeCurrencySymbol('minimum-interest')" 
+                               onblur="addCurrencySymbol('minimum-interest')" 
+                               oninput="formatCurrencyInput('minimum-interest')" 
+                               placeholder="0 đ">
+                    </div>
+                    
+                    <button type="button" class="calculate-button" onclick="calculateInstallment()">
+                        <span class="button-icon">🧮</span>
+                        Tính Toán
+                    </button>
+                </form>
+                
+                <div class="results" id="results" style="display: none;">
+                    <div class="results-header">
+                        <h3>📋 Kết Quả Tính Toán</h3>
+                    </div>
+                    <div class="result-item" id="result-debt"></div>
+                    <div class="result-item" id="result-monthly"></div>
+                    <div class="result-item payment-details" id="result-details"></div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        function formatCurrencyInput(id) {
+            let input = document.getElementById(id);
+            let rawValue = input.value.replace(/\D/g, '');
+            if (rawValue) {
+                let formattedValue = new Intl.NumberFormat('vi-VN').format(rawValue);
+                input.value = formattedValue;
+                input.setAttribute('data-value', rawValue);
+            } else {
+                input.value = '';
+                input.setAttribute('data-value', '0');
+            }
         }
-    }
 
-    function removeCurrencySymbol(id) {
-        let input = document.getElementById(id);
-        input.value = input.value.replace(/ đ/g, '');
-    }
-
-    function addCurrencySymbol(id) {
-        let input = document.getElementById(id);
-        let rawValue = input.getAttribute('data-value');
-        if (rawValue) {
-            let formattedValue = new Intl.NumberFormat('vi-VN').format(rawValue);
-            input.value = formattedValue + ' đ';
+        function removeCurrencySymbol(id) {
+            let input = document.getElementById(id);
+            input.value = input.value.replace(/ đ/g, '');
         }
-    }
 
-    function getNumericValue(id) {
-        let input = document.getElementById(id);
-        return parseInt(input.getAttribute('data-value'), 10);
-    }
-
-    function validateInterestRate() {
-        let interestRateInput = document.getElementById("interest-rate");
-        let value = parseFloat(interestRateInput.value);
-        
-        if (value < 3) {
-            interestRateInput.value = 3;
-        } else if (value > 10) {
-            interestRateInput.value = 10;
+        function addCurrencySymbol(id) {
+            let input = document.getElementById(id);
+            let rawValue = input.getAttribute('data-value');
+            if (rawValue) {
+                let formattedValue = new Intl.NumberFormat('vi-VN').format(rawValue);
+                input.value = formattedValue + ' đ';
+            }
         }
-    }
 
-    function updateDownPaymentAndInstallmentPeriod() {
-        let productPrice = getNumericValue("product-price-page");
-        let downPaymentField = document.getElementById("down-payment");
-        let installmentPeriodField = document.getElementById("installment-period");
+        function getNumericValue(id) {
+            let input = document.getElementById(id);
+            return parseInt(input.getAttribute('data-value'), 10);
+        }
 
-        if (productPrice) {
+        function validateInterestRate() {
+            let interestRateInput = document.getElementById("interest-rate");
+            let value = parseFloat(interestRateInput.value);
+            
+            if (value < 3) {
+                interestRateInput.value = 3;
+            } else if (value > 10) {
+                interestRateInput.value = 10;
+            }
+        }
+
+        function updateDownPaymentAndInstallmentPeriod() {
+            let productPrice = getNumericValue("product-price-page");
+            let downPaymentField = document.getElementById("down-payment");
+
+            if (productPrice) {
+                let minimumDownPayment = productPrice * 0.3;
+                downPaymentField.value = new Intl.NumberFormat('vi-VN').format(Math.round(minimumDownPayment)) + ' đ';
+                downPaymentField.setAttribute('data-value', Math.round(minimumDownPayment));
+            } else {
+                downPaymentField.value = '';
+                downPaymentField.setAttribute('data-value', '0');
+            }
+        }
+
+        function calculateInstallment() {
+            let productPrice = getNumericValue("product-price-page");
+            let downPayment = getNumericValue("down-payment");
+            let installmentPeriod = parseInt(document.getElementById("installment-period").value);
+            let interestRate = parseFloat(document.getElementById("interest-rate").value) / 100;
+            let minimumInterest = getNumericValue("minimum-interest");
+
+            if (isNaN(productPrice) || isNaN(downPayment) || isNaN(installmentPeriod) || isNaN(interestRate)) {
+                showError("Vui lòng nhập đầy đủ thông tin hợp lệ.");
+                return;
+            }
+
             let minimumDownPayment = productPrice * 0.3;
-            installmentPeriodField.disabled = false;
-            downPaymentField.value = new Intl.NumberFormat('vi-VN').format(Math.round(minimumDownPayment)) + ' đ';
-            downPaymentField.setAttribute('data-value', Math.round(minimumDownPayment));
-        } else {
-            downPaymentField.value = '';
-            downPaymentField.setAttribute('data-value', '0');
+
+            if (downPayment < minimumDownPayment) {
+                showError(`Số tiền trả trước phải tối thiểu là ${new Intl.NumberFormat('vi-VN').format(minimumDownPayment)} đ.`);
+                return;
+            }
+
+            let debt = Math.round(productPrice - downPayment);
+            let principalPayment = Math.round(debt / installmentPeriod);
+            let paymentDetails = "";
+            let totalInterest = 0;
+
+            for (let i = 1; i <= installmentPeriod; i++) {
+                let calculatedInterest = Math.round(debt * interestRate);
+                let interest = Math.max(calculatedInterest, minimumInterest);
+                let monthlyPayment = Math.round(principalPayment + interest);
+                totalInterest += interest;
+                
+                paymentDetails += `
+                    <div class="payment-item">
+                        <div class="payment-month">Tháng ${i}</div>
+                        <div class="payment-amount">${new Intl.NumberFormat('vi-VN').format(monthlyPayment)} đ</div>
+                        <div class="payment-breakdown">
+                            <span class="debt-amount">Nợ: ${new Intl.NumberFormat('vi-VN').format(debt)} đ</span>
+                            <span class="interest-amount">Lãi: ${new Intl.NumberFormat('vi-VN').format(interest)} đ</span>
+                        </div>
+                    </div>
+                `;
+                debt = Math.round(debt - principalPayment);
+            }
+
+            let totalPayment = Math.round(productPrice - downPayment) + totalInterest;
+
+            document.getElementById("result-debt").innerHTML = `
+                <div class="summary-item">
+                    <span class="summary-label">💰 Tổng Nợ:</span>
+                    <span class="summary-value">${new Intl.NumberFormat('vi-VN').format(Math.round(productPrice - downPayment))} đ</span>
+                </div>
+            `;
+
+            document.getElementById("result-monthly").innerHTML = `
+                <div class="summary-item">
+                    <span class="summary-label">💳 Tổng Thanh Toán:</span>
+                    <span class="summary-value">${new Intl.NumberFormat('vi-VN').format(totalPayment)} đ</span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">📊 Tổng Lãi:</span>
+                    <span class="summary-value">${new Intl.NumberFormat('vi-VN').format(totalInterest)} đ</span>
+                </div>
+            `;
+
+            document.getElementById("result-details").innerHTML = `
+                <div class="payment-schedule">
+                    <h4>📅 Lịch Trả Góp Chi Tiết</h4>
+                    ${paymentDetails}
+                </div>
+            `;
+
+            document.getElementById("results").style.display = "block";
+            document.getElementById("results").scrollIntoView({ behavior: 'smooth' });
         }
-    }
 
-    function calculateInstallment() {
-        let productPrice = getNumericValue("product-price-page");
-        let downPayment = getNumericValue("down-payment");
-        let installmentPeriod = parseInt(document.getElementById("installment-period").value);
-        let interestRate = parseFloat(document.getElementById("interest-rate").value) / 100;
-
-        if (isNaN(productPrice) || isNaN(downPayment) || isNaN(installmentPeriod) || isNaN(interestRate)) {
-            let errorElement = document.createElement('p');
-            errorElement.style.color = 'red';
-            errorElement.textContent = "Vui lòng nhập đầy đủ thông tin hợp lệ.";
-            document.getElementById("result-details").innerHTML = '';
-            document.getElementById("result-details").appendChild(errorElement);
-            return;
+        function showError(message) {
+            document.getElementById("result-details").innerHTML = `
+                <div class="error-message">
+                    <span class="error-icon">⚠️</span>
+                    ${message}
+                </div>
+            `;
+            document.getElementById("results").style.display = "block";
         }
 
-        let minimumDownPayment = productPrice * 0.3;
-
-        if (downPayment < minimumDownPayment) {
-            let errorElement = document.createElement('p');
-            errorElement.style.color = 'red';
-            errorElement.textContent = `Số tiền trả trước phải tối thiểu là ${new Intl.NumberFormat('vi-VN').format(minimumDownPayment)} đ.`;
-            document.getElementById("result-details").innerHTML = '';
-            document.getElementById("result-details").appendChild(errorElement);
-            return;
-        }
-
-        document.getElementById("result-details").innerHTML = '';
-
-        let debt = Math.round(productPrice - downPayment);
-        let principalPayment = Math.round(debt / installmentPeriod);
-        let paymentDetails = "";
-        for (let i = 1; i <= installmentPeriod; i++) {
-            let interest = Math.round(debt * interestRate);
-            let monthlyPayment = Math.round(principalPayment + interest);
-            paymentDetails += `- Tháng Thứ ${i}: ${new Intl.NumberFormat('vi-VN').format(monthlyPayment)} đ <br>(Nợ: ${new Intl.NumberFormat('vi-VN').format(debt)} đ, Phí: ${new Intl.NumberFormat('vi-VN').format(interest)} đ)<br>`;
-            debt = Math.round(debt - principalPayment);
-        }
-
-        document.getElementById("result-debt").innerText = "Tổng Nợ: " + new Intl.NumberFormat('vi-VN').format(Math.round(productPrice - downPayment)) + " đ";
-        document.getElementById("result-details").innerHTML = paymentDetails;
-    }
-
-    document.addEventListener('DOMContentLoaded', function() {
-        updateDownPaymentAndInstallmentPeriod();
-    });
-</script>
+        document.addEventListener('DOMContentLoaded', function() {
+            updateDownPaymentAndInstallmentPeriod();
+        });
+    </script>
+</body>
+</html>
