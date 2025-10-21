@@ -43,25 +43,6 @@ body {
     overflow: hidden;
 }
 
-.calculator-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    padding: 40px 30px;
-    text-align: center;
-}
-
-.calculator-header h2 {
-    font-size: 2rem;
-    font-weight: 700;
-    margin-bottom: 10px;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
-}
-
-.calculator-description {
-    font-size: 1rem;
-    opacity: 0.9;
-    font-weight: 400;
-}
 
 /* Form Styles */
 .calculator-form {
@@ -102,6 +83,13 @@ body {
     border-color: #667eea;
     box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
     transform: translateY(-1px);
+}
+
+.form-select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: none;
 }
 
 .form-input::placeholder {
@@ -152,13 +140,6 @@ body {
     border: 1px solid rgba(0,0,0,0.05);
 }
 
-.results-header h3 {
-    color: #2c3e50;
-    font-size: 1.3rem;
-    font-weight: 700;
-    margin-bottom: 20px;
-    text-align: center;
-}
 
 .result-item {
     margin-bottom: 15px;
@@ -191,52 +172,6 @@ body {
     font-size: 1.1rem;
 }
 
-/* Payment Schedule */
-.payment-schedule h4 {
-    color: #2c3e50;
-    font-size: 1.1rem;
-    font-weight: 600;
-    margin-bottom: 15px;
-    text-align: center;
-}
-
-.payment-item {
-    background: white;
-    border-radius: 10px;
-    padding: 15px;
-    margin-bottom: 10px;
-    border-left: 3px solid #667eea;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-}
-
-.payment-month {
-    font-weight: 600;
-    color: #2c3e50;
-    font-size: 0.95rem;
-    margin-bottom: 5px;
-}
-
-.payment-amount {
-    font-weight: 700;
-    color: #667eea;
-    font-size: 1.1rem;
-    margin-bottom: 8px;
-}
-
-.payment-breakdown {
-    display: flex;
-    gap: 15px;
-    font-size: 0.9rem;
-}
-
-.debt-amount, .interest-amount {
-    color: #6c757d;
-}
-
-.interest-amount {
-    color: #e74c3c;
-    font-weight: 500;
-}
 
 /* Error Message */
 .error-message {
@@ -266,13 +201,6 @@ body {
         border-radius: 20px;
     }
     
-    .calculator-header {
-        padding: 30px 20px;
-    }
-    
-    .calculator-header h2 {
-        font-size: 1.6rem;
-    }
     
     .calculator-form {
         padding: 30px 20px;
@@ -296,10 +224,6 @@ body {
         padding: 20px;
     }
     
-    .payment-breakdown {
-        flex-direction: column;
-        gap: 5px;
-    }
     
     .summary-item {
         flex-direction: column;
@@ -310,9 +234,6 @@ body {
 
 @media (max-width: 480px) {
     
-    .calculator-header h2 {
-        font-size: 1.4rem;
-    }
     
     .calculator-form {
         padding: 25px 15px;
@@ -332,9 +253,6 @@ body {
         padding: 15px;
     }
     
-    .payment-item {
-        padding: 12px;
-    }
 }
 
 /* Animation */
